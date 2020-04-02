@@ -1,17 +1,24 @@
 rm -rf build
 rm -rf dist
-rm -f pynotify_worker.spec
+rm -f sql2xls_webapp.spec
+rm -f sql2xls_worker.spec
 
 OUTPUT=../output
 PATH_NAME=`basename \`pwd\``
 
-pipenv run pyinstaller -F sql2xls_task.py
+cp pkg/sql2xls_webapp.py ./sql2xls_webapp.py
+cp pkg/sql2xls_worker.py ./sql2xls_worker.py
 
-mkdir dist/logfile
+pipenv run pyinstaller -F sql2xls_webapp.py
+pipenv run pyinstaller -F sql2xls_worker.py
+
+mkdir dist/log
+mkdir dist/log/app
+mkdir dist/log/worker
 mkdir dist/config
-cp -r config/logging dist/config/logging
-cp -r run.sh dist/run.sh
-cp -r conv_funcs.py dist/funcs.py
+cp -r config dist/config
+cp -r config dist/config
+cp -r ./pkg/conv_funcs.py dist/funcs.py
 
 mkdir ${OUTPUT}
 rm -rf ${OUTPUT}/${PATH_NAME}
@@ -22,4 +29,7 @@ tar zcvf ${OUTPUT}/${PATH_NAME}.tar.gz ${OUTPUT}/${PATH_NAME}
 
 rm -rf build
 rm -rf dist
-rm -f pynotify_worker.spec
+rm -f sql2xls_webapp.spec
+rm -f sql2xls_worker.spec
+rm -f sql2xls_webapp.py
+rm -f sql2xls_worker.py
