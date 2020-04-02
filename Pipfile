@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.douban.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+pylint = "*"
+"autopep8" = "*"
+"unittest2" = "*"
+pymysql = "*"
+"pep8" = "*"
+"flake8" = "*"
+bandit = "*"
+
+[packages]
+pyopts = {git = "https://github.com/ppolxda/pyopts"}
+"psycopg2-binary" = "*"
+sqlalchemy = "*"
+tenacity = "*"
+pyinstaller = "*"
+xlwt = "*"
+pymysql = "*"
+minio = "*"
+redis = "*"
+sanic = "*"
+aiohttp = "*"
+
+[requires]
+python_version = "3.7"

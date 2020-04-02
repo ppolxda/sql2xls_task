@@ -1,0 +1,17 @@
+{
+  "main": {
+    "console_level": "INFO"
+  },
+  "handlers": [
+    {
+      "handler_name": "logging_app",
+      "handler_filepath": "./log/worker/logging_{index:02d}.log",
+      "handler_level": "INFO"
+    },
+    {
+      "handler_name": "sql2xls_task",
+      "handler_filepath": "./log/worker/logging_{index:02d}.log",
+      "handler_level": "INFO"
+    }
+  ]
+}

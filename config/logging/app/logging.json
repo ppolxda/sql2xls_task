@@ -1,0 +1,27 @@
+{
+  "main": {
+    "console_level": "INFO"
+  },
+  "handlers": [
+    {
+      "handler_name": "report_app",
+      "handler_filepath": "./log/app/logging_{index:02d}.log",
+      "handler_level": "INFO"
+    },
+    {
+      "handler_name": "sanic.root",
+      "handler_filepath": "./log/app/sanic_root_{index:02d}.log",
+      "handler_level": "INFO"
+    },
+    {
+      "handler_name": "sanic.error",
+      "handler_filepath": "./log/app/sanic_error_{index:02d}.log",
+      "handler_level": "INFO"
+    },
+    {
+      "handler_name": "sanic.access",
+      "handler_filepath": "./log/app/sanic_access_{index:02d}.log",
+      "handler_level": "INFO"
+    }
+  ]
+}
