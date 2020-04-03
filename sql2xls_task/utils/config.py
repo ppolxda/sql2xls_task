@@ -9,7 +9,6 @@
 # import re
 # import io
 import redis
-import aiohttp
 import logging
 # import mimetypes
 from minio import Minio
@@ -135,23 +134,3 @@ class Settings(RootSettings):
             self.miniio_bucket,
             logging.getLogger('taskmaker')
         )
-
-    async def upload_file(self, url, buffer, filetype):
-        async with aiohttp.ClientSession() as session:
-            # buf = io.BytesIO()
-            # buf.write(buffer)
-            # buf.seek(0)
-
-            # data = aiohttp.FormData()
-            # data.add_field(
-            #     'file', buffer,
-            #     filename='report.xls',
-            #     content_type=mimetypes.types_map[filetype]
-            # )
-
-            async with session.put(url, data=buffer) as response:
-                if response.status == 200:
-                    return
-
-                html = await response.text()
-                return html
