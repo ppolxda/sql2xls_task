@@ -16,13 +16,22 @@ class WebHttpError(Exception):
 
 class WebAppClient(object):
 
-    def __init__(self, project=None):
+    def __init__(self, host, project=None):
+        if not host or \
+            not isinstance(host, str) or \
+                not (host.startswith('http://') or host.startswith('https://')):
+            raise TypeError('host invaild')
+
+        if host[-1] == '/':
+            host = host[:-1]
+
+        self.host = host
         self.project = project
 
     async def add_task_sync(self, userid, sql, sql_url, sql_parames,
                             options, memo='', project=None):
         project = self.__get_project(project)
-        url = '/export/task/{project}/{userid}/add/sync'.format(
+        url = self.host + '/export/task/{project}/{userid}/add/sync'.format(
             project=project, userid=userid
         )
 
@@ -46,7 +55,7 @@ class WebAppClient(object):
     async def add_task_async(self, userid, sql, sql_url, sql_parames,
                              options, memo='', project=None):
         project = self.__get_project(project)
-        url = '/export/task/{project}/{userid}/add/async'.format(
+        url = self.host + '/export/task/{project}/{userid}/add/async'.format(
             project=project, userid=userid
         )
 
@@ -69,7 +78,7 @@ class WebAppClient(object):
 
     async def delete_task_all(self, userid, project=None):
         project = self.__get_project(project)
-        url = '/export/task/{project}/{userid}/all'.format(
+        url = self.host + '/export/task/{project}/{userid}/all'.format(
             project=project, userid=userid
         )
 
@@ -81,7 +90,7 @@ class WebAppClient(object):
 
     async def delete_task_one(self, userid, taskid, project=None):
         project = self.__get_project(project)
-        url = '/export/task/{project}/{userid}/{taskid}'.format(
+        url = self.host + '/export/task/{project}/{userid}/{taskid}'.format(
             project=project, userid=userid, taskid=taskid
         )
 
@@ -93,7 +102,7 @@ class WebAppClient(object):
 
     async def get_task_list(self, userid, project=None):
         project = self.__get_project(project)
-        url = '/export/task/{project}/{userid}/list'.format(
+        url = self.host + '/export/task/{project}/{userid}/list'.format(
             project=project, userid=userid
         )
 
