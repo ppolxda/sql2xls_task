@@ -6,7 +6,7 @@
 
 @desc: config
 """
-from pyopts import opts
+# from pyopts import opts
 from pyopts import FeildOption
 # from pyopts import RootSettings
 from .config import Settings as Settingsx

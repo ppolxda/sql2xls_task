@@ -44,7 +44,6 @@ PyInstaller==3.6
 pylint==2.4.4
 pymongo==3.10.1
 PyMySQL==0.9.3
-pyopts==0.0.11
 python-dateutil==2.8.1
 pytz==2019.3
 PyYAML==5.3.1

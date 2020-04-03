@@ -19,7 +19,8 @@ class WebAppClient(object):
     def __init__(self, host, project=None):
         if not host or \
             not isinstance(host, str) or \
-                not (host.startswith('http://') or host.startswith('https://')):
+                not (host.startswith('http://') or
+                     host.startswith('https://')):
             raise TypeError('host invaild')
 
         if host[-1] == '/':
