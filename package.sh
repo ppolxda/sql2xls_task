@@ -16,8 +16,7 @@ mkdir dist/log
 mkdir dist/log/app
 mkdir dist/log/worker
 mkdir dist/config
-cp -r config dist/config
-cp -r config dist/config
+cp -r config dist/
 cp -r ./pkg/conv_funcs.py dist/funcs.py
 
 mkdir ${OUTPUT}
