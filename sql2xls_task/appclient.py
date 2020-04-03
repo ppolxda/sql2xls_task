@@ -14,7 +14,7 @@ class WebHttpError(Exception):
     pass
 
 
-class WebAppClient(object):
+class AppClient(object):
 
     def __init__(self, host, project=None):
         if not host or \
@@ -29,7 +29,7 @@ class WebAppClient(object):
         self.host = host
         self.project = project
 
-    async def add_task_sync(self, userid, sql, sql_url, sql_parames,
+    async def add_task_sync(self, userid, sql_url, sql, sql_parames,
                             options, memo='', project=None):
         project = self.__get_project(project)
         url = self.host + '/export/task/{project}/{userid}/add/sync'.format(
@@ -42,6 +42,8 @@ class WebAppClient(object):
             'sql_parames': sql_parames,
             'options': options,
             'memo': memo,
+            'userid': userid,
+            'project': project,
         }
 
         task = Task(**data)
@@ -53,7 +55,7 @@ class WebAppClient(object):
                     raise WebHttpError(response.reason)
                 return await response.json()
 
-    async def add_task_async(self, userid, sql, sql_url, sql_parames,
+    async def add_task_async(self, userid, sql_url, sql, sql_parames,
                              options, memo='', project=None):
         project = self.__get_project(project)
         url = self.host + '/export/task/{project}/{userid}/add/async'.format(
@@ -66,6 +68,8 @@ class WebAppClient(object):
             'sql_parames': sql_parames,
             'options': options,
             'memo': memo,
+            'userid': userid,
+            'project': project,
         }
 
         task = Task(**data)

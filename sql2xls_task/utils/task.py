@@ -110,6 +110,10 @@ class Task(object):
         if not self.sql or not isinstance(self.sql, str):
             raise TypeError('sql invaild')
 
+        sql_lower = self.sql.lower()
+        if sql_lower != 'select' or 'from' not in sql_lower:
+            raise TypeError('sql not select')
+
         # TODO - sql_url format checker
         if not self.sql_url or not isinstance(self.sql_url, str):
             raise TypeError('sql_url invaild')
