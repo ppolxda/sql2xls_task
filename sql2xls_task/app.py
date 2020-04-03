@@ -174,7 +174,7 @@ def export_task_list(request, project, userid):
 
 def main():
     LOGGER.info('webapp start')
-    app.run()
+    app.run(host=settings.app_host, port=settings.app_port)
 
 
 if __name__ == '__main__':
