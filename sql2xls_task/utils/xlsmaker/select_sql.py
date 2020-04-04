@@ -56,7 +56,8 @@ class SelectSql(object):
         if self.result_cursor is not None:
             return self.result_cursor
 
-        if self.sql_str[:6].lower() != 'select':
+        sql_str = self.sql_str.lower()
+        if not sql_str.startswith('select'):
             raise TypeError('sql not select')
 
         # self.sql_str = self.sql_str.replace(, '?')

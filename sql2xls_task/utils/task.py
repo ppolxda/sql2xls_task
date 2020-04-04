@@ -111,7 +111,7 @@ class Task(object):
             raise TypeError('sql invaild')
 
         sql_lower = self.sql.lower()
-        if sql_lower[:6] != 'select' or 'from' not in sql_lower:
+        if not sql_lower.startswith('select') or 'from' not in sql_lower:
             raise TypeError('sql not select')
 
         # TODO - sql_url format checker
