@@ -94,12 +94,21 @@ class Settings(RootSettings):
         help_desc='miniio_bucket'
     )
 
-    DB_SYNC_TIMEOUT = 'dbs_config.sync_timeout'
-    DB_SYNC_TIMEOUT_OPT = FeildOption(
-        DB_SYNC_TIMEOUT, 'int',
-        default=60,
-        desc='sync_timeout',
-        help_desc='sync_timeout'
+    DB_MINIIO_RES_BUCKET = 'dbs_config.miniio_res_bucket'
+    DB_MINIIO_RES_BUCKET_OPT = FeildOption(
+        DB_MINIIO_RES_BUCKET, 'string',
+        default='filesres',
+        desc='miniio_res_bucket',
+        help_desc='miniio_res_bucket'
+    )
+
+    DB_MINIIO_REGION = 'dbs_config.miniio_region'
+    DB_MINIIO_REGION_OPT = FeildOption(
+        DB_MINIIO_REGION, 'string',
+        default=None,
+        desc='miniio_region',
+        help_desc='miniio_region',
+        allow_none=True
     )
 
     def __init__(self, name):
@@ -110,7 +119,8 @@ class Settings(RootSettings):
         self.miniio_accesskey = opts.get_opt(self.DB_MINIIO_ACCESSKEY)
         self.miniio_secretkey = opts.get_opt(self.DB_MINIIO_SECRETKEY)
         self.miniio_bucket = opts.get_opt(self.DB_MINIIO_BUCKET)
-        self.sync_timeout = opts.get_opt(self.DB_SYNC_TIMEOUT)
+        self.miniio_res_bucket = opts.get_opt(self.DB_MINIIO_RES_BUCKET)
+        self.miniio_region = opts.get_opt(self.DB_MINIIO_REGION)
 
         self.redis_cli = redis.Redis.from_url(self.redis_url)
         self.borker = RedisBroker(self.redis_cli)
@@ -126,11 +136,12 @@ class Settings(RootSettings):
             self.miniio_url,
             access_key=self.miniio_accesskey,
             secret_key=self.miniio_secretkey,
-            secure=secure
+            region=self.miniio_region,
+            secure=secure,
         )
 
         self.task_maker = TaskMaker(
             self.borker, self.minio_cli,
-            self.miniio_bucket,
+            self.miniio_bucket, self.miniio_region,
             logging.getLogger('taskmaker')
         )

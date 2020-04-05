@@ -22,18 +22,24 @@ from .broker import Broker
 
 class TaskMaker(object):
 
-    def __init__(self, broker: Broker,
-                 minio_cli: Minio, bucket_name: str,
+    def __init__(self, broker: Broker, minio_cli: Minio,
+                 bucket_name: str, bucket_location: str,
                  logger: logging.Logger):
         self.logger = logger
         self.broker = broker
         self.minio_cli = minio_cli
         self.bucket_name = bucket_name
+        self.bucket_location = bucket_location
+        self.is_bucket_create = False
 
-        # TODO - if error run not exist
+    def create_bucket_if_not_exists(self):
+        if self.is_bucket_create:
+            return
+
         result = self.minio_cli.bucket_exists(self.bucket_name)
         if not result:
-            self.minio_cli.make_bucket(self.bucket_name)
+            self.minio_cli.make_bucket(self.bucket_name, self.bucket_location)
+        self.is_bucket_create = True
 
     def create_task(self, **kwargs):
         task = Task(**kwargs)
@@ -63,6 +69,9 @@ class TaskMaker(object):
 
     def delete_task_by_id(self, project, userid, taskid):
         task = Task(project=project, userid=userid, taskid=taskid)
+
+        self.create_bucket_if_not_exists()
+
         self.minio_cli.remove_object(
             self.bucket_name,
             task.status_object
@@ -74,6 +83,7 @@ class TaskMaker(object):
         )
 
     def iter_task_list(self, project, userid):
+        self.create_bucket_if_not_exists()
         objects = self.minio_cli.list_objects_v2(
             self.bucket_name, prefix='status/{}/{}/'.format(
                 project, userid
@@ -103,6 +113,8 @@ class TaskMaker(object):
             yield data
 
     def get_task_list(self, project, userid):
+        self.create_bucket_if_not_exists()
+
         result = []
         for data in self.iter_task_list(project, userid):
             task = TaskStatus(**data)
@@ -118,6 +130,7 @@ class TaskMaker(object):
 
     def is_file_exist(self, task: Task):
         try:
+            self.create_bucket_if_not_exists()
             return self.minio_cli.stat_object(
                 self.bucket_name,
                 task.download_object,
@@ -128,6 +141,7 @@ class TaskMaker(object):
             return None
 
     def create_download_url(self, task: Task):
+        self.create_bucket_if_not_exists()
         return self.minio_cli.presigned_get_object(
             self.bucket_name,
             task.download_object,
@@ -137,6 +151,7 @@ class TaskMaker(object):
     def get_task_by_id(self, project, userid, taskid):
         task = Task(taskid=taskid, project=project, userid=userid)
 
+        self.create_bucket_if_not_exists()
         _object = self.minio_cli.get_object(
             self.bucket_name, task.status_object
         )
@@ -157,6 +172,7 @@ class TaskMaker(object):
         data = task.to_json().encode('utf8')
         buf = io.BytesIO(data)
 
+        self.create_bucket_if_not_exists()
         return self.minio_cli.put_object(
             self.bucket_name, task.status_object,
             buf, len(data),
@@ -168,6 +184,7 @@ class TaskMaker(object):
         data = task.to_json().encode('utf8')
         buf = io.BytesIO(data)
 
+        self.create_bucket_if_not_exists()
         return self.minio_cli.put_object(
             self.bucket_name, task.upload_object,
             buf, len(data),

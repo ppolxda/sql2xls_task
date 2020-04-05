@@ -16,6 +16,12 @@ settings = Settings('report_app')
 app = Sanic('report_app')
 LOGGER = logging.getLogger('report_app')
 task_maker = settings.task_maker
+res_maker = settings.res_maker
+
+
+# ----------------------------------------------
+#        Export
+# ----------------------------------------------
 
 
 async def is_file_exist(task: Task, timeout, trycount=0):
@@ -127,9 +133,15 @@ async def export_task_async(request, project, userid):
     methods=frozenset({"DELETE"})
 )
 def export_task_delete_all(request, project, userid):
-    task_maker.delete_task_all(
-        project, userid
-    )
+    try:
+        task_maker.delete_task_all(
+            project, userid
+        )
+    except Exception as ex:
+        return json({
+            'error': 1,
+            'message': str(ex)
+        })
 
     return json({
         'error': 0,
@@ -142,9 +154,15 @@ def export_task_delete_all(request, project, userid):
     methods=frozenset({"DELETE"})
 )
 def export_task_delete(request, project, userid, taskid):
-    task_maker.delete_task_by_id(
-        project, userid, taskid
-    )
+    try:
+        task_maker.delete_task_by_id(
+            project, userid, taskid
+        )
+    except Exception as ex:
+        return json({
+            'error': 1,
+            'message': str(ex)
+        })
 
     return json({
         'error': 0,
@@ -157,9 +175,15 @@ def export_task_delete(request, project, userid, taskid):
     methods=frozenset({"GET"})
 )
 def export_task_list(request, project, userid):
-    datas = task_maker.get_task_list(
-        project, userid
-    )
+    try:
+        datas = task_maker.get_task_list(
+            project, userid
+        )
+    except Exception as ex:
+        return json({
+            'error': 1,
+            'message': str(ex)
+        })
 
     return json({
         'error': 0,
@@ -167,9 +191,44 @@ def export_task_list(request, project, userid):
         "datas": datas
     })
 
-# @app.route("/export/download")
-# def export_download():
-#     return "Hello, World!"
+
+# ----------------------------------------------
+#        Resources
+# ----------------------------------------------
+
+
+@app.route(
+    "/res/<project>",
+    methods=frozenset({"GET"})
+)
+async def resources_presigned(request, project):
+    try:
+        args = request.args
+        if not isinstance(args, dict) or not request.args:
+            raise TypeError('query_args invaild')
+    except Exception:
+        return json({
+            'error': 1,
+            'message': 'request invail'
+        })
+
+    try:
+        ftype = args.get('type', '')
+        expires = int(args.get('expires', 60))
+        url = res_maker.presigned_put_object(
+            project, ftype, expires
+        )
+    except Exception as ex:
+        return json({
+            'error': 1,
+            'message': str(ex)
+        })
+
+    return json({
+        'error': 0,
+        'message': 'sucess',
+        'url': url
+    })
 
 
 def main():

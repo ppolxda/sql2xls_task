@@ -6,10 +6,12 @@
 
 @desc: config
 """
+import logging
 from pyopts import opts
 from pyopts import FeildOption
 # from pyopts import RootSettings
 from .config import Settings as Settingsx
+from .res_maker import ResourcesMaker
 
 
 class Settings(Settingsx):
@@ -50,7 +52,43 @@ class Settings(Settingsx):
         help_desc='app_port'
     )
 
+    APP_SYNC_TIMEOUT = 'app_config.sync_timeout'
+    APP_SYNC_TIMEOUT_OPT = FeildOption(
+        APP_SYNC_TIMEOUT, 'int',
+        default=60,
+        desc='sync_timeout',
+        help_desc='sync_timeout'
+    )
+
+    APP_RES_EXPIRES = 'app_config.res_expires'
+    APP_RES_EXPIRES_OPT = FeildOption(
+        APP_RES_EXPIRES, 'int',
+        default=60,
+        desc='res_expires',
+        help_desc='res_expires'
+    )
+
+    APP_PRESIGNED_TRYCOUNT = 'app_config.presigned_trycount'
+    APP_PRESIGNED_TRYCOUNT_OPT = FeildOption(
+        APP_PRESIGNED_TRYCOUNT, 'int',
+        default=60,
+        desc='presigned_trycount',
+        help_desc='presigned_trycount'
+    )
+
     def __init__(self, name):
         super().__init__(name)
         self.app_host = opts.get_opt(self.APP_HOST)
         self.app_port = opts.get_opt(self.APP_PORT)
+        self.sync_timeout = opts.get_opt(self.APP_SYNC_TIMEOUT)
+        self.res_expires = opts.get_opt(self.APP_RES_EXPIRES)
+        self.presigned_trycount = opts.get_opt(self.APP_PRESIGNED_TRYCOUNT)
+
+        self.res_maker = ResourcesMaker(
+            self.minio_cli,
+            self.miniio_res_bucket,
+            self.miniio_region,
+            self.presigned_trycount,
+            self.res_expires,
+            logging.getLogger('res_maker')
+        )
