@@ -16,6 +16,7 @@ import mimetypes
 from minio import Minio
 from minio.error import NoSuchKey
 from minio.error import ResponseError
+from minio.error import NoSuchBucketPolicy
 
 
 class ResourcesMaker(object):
@@ -47,6 +48,46 @@ class ResourcesMaker(object):
         result = self.minio_cli.bucket_exists(self.bucket_name)
         if not result:
             self.minio_cli.make_bucket(self.bucket_name, self.bucket_location)
+
+        try:
+            policy = self.minio_cli.get_bucket_policy(self.bucket_name)
+        except NoSuchBucketPolicy as ex:
+            policy = {
+                'Version': '2012-10-17'
+            }
+        else:
+            policy = json.loads(policy)
+
+        policy_read_only = {
+            "Version": policy['Version'],
+            "Statement": [
+                {
+                    "Sid": "",
+                    "Effect": "Allow",
+                    "Principal": {"AWS": "*"},
+                    "Action": "s3:GetBucketLocation",
+                    "Resource": "arn:aws:s3:::{}".format(self.bucket_name)
+                },
+                {
+                    "Sid": "",
+                    "Effect": "Allow",
+                    "Principal": {"AWS": "*"},
+                    "Action": "s3:ListBucket",
+                    "Resource": "arn:aws:s3:::{}".format(self.bucket_name)
+                },
+                {
+                    "Sid": "",
+                    "Effect": "Allow",
+                    "Principal": {"AWS": "*"},
+                    "Action": "s3:GetObject",
+                    "Resource": "arn:aws:s3:::{}/*".format(self.bucket_name)
+                }
+            ]
+        }
+
+        self.minio_cli.set_bucket_policy(
+            self.bucket_name, json.dumps(policy_read_only)
+        )
         self.is_bucket_create = True
 
     def is_file_exist(self, path):

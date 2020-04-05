@@ -11,7 +11,7 @@ from pyopts import opts
 from pyopts import FeildOption
 # from pyopts import RootSettings
 from .config import Settings as Settingsx
-from .res_maker import ResourcesMaker
+from .fsmaker.res_maker import ResourcesMaker
 
 
 class Settings(Settingsx):

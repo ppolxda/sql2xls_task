@@ -29,11 +29,11 @@ class AppClient(object):
         self.host = host
         self.project = project
 
-    async def add_task_sync(self, userid, sql_url, sql, sql_parames,
+    async def add_task_sync(self, user, sql_url, sql, sql_parames,
                             options, memo='', project=None):
         project = self.__get_project(project)
-        url = self.host + '/export/task/{project}/{userid}/add/sync'.format(
-            project=project, userid=userid
+        url = self.host + '/export/task/{project}/{user}/add/sync'.format(
+            project=project, user=user
         )
 
         data = {
@@ -42,7 +42,7 @@ class AppClient(object):
             'sql_parames': sql_parames,
             'options': options,
             'memo': memo,
-            'userid': userid,
+            'user': user,
             'project': project,
         }
 
@@ -55,11 +55,11 @@ class AppClient(object):
                     raise WebHttpError(response.reason)
                 return await response.json()
 
-    async def add_task_async(self, userid, sql_url, sql, sql_parames,
+    async def add_task_async(self, user, sql_url, sql, sql_parames,
                              options, memo='', project=None):
         project = self.__get_project(project)
-        url = self.host + '/export/task/{project}/{userid}/add/async'.format(
-            project=project, userid=userid
+        url = self.host + '/export/task/{project}/{user}/add/async'.format(
+            project=project, user=user
         )
 
         data = {
@@ -68,7 +68,7 @@ class AppClient(object):
             'sql_parames': sql_parames,
             'options': options,
             'memo': memo,
-            'userid': userid,
+            'user': user,
             'project': project,
         }
 
@@ -81,10 +81,10 @@ class AppClient(object):
                     raise WebHttpError(response.reason)
                 return await response.json()
 
-    async def delete_task_all(self, userid, project=None):
+    async def delete_task_all(self, user, project=None):
         project = self.__get_project(project)
-        url = self.host + '/export/task/{project}/{userid}/all'.format(
-            project=project, userid=userid
+        url = self.host + '/export/task/{project}/{user}/all'.format(
+            project=project, user=user
         )
 
         async with aiohttp.ClientSession() as session:
@@ -93,10 +93,10 @@ class AppClient(object):
                     raise WebHttpError(response.reason)
                 return await response.json()
 
-    async def delete_task_one(self, userid, taskid, project=None):
+    async def delete_task_one(self, user, taskid, project=None):
         project = self.__get_project(project)
-        url = self.host + '/export/task/{project}/{userid}/{taskid}'.format(
-            project=project, userid=userid, taskid=taskid
+        url = self.host + '/export/task/{project}/{user}/{taskid}'.format(
+            project=project, user=user, taskid=taskid
         )
 
         async with aiohttp.ClientSession() as session:
@@ -105,10 +105,10 @@ class AppClient(object):
                     raise WebHttpError(response.reason)
                 return await response.json()
 
-    async def get_task_list(self, userid, project=None):
+    async def get_task_list(self, user, project=None):
         project = self.__get_project(project)
-        url = self.host + '/export/task/{project}/{userid}/list'.format(
-            project=project, userid=userid
+        url = self.host + '/export/task/{project}/{user}/list'.format(
+            project=project, user=user
         )
 
         async with aiohttp.ClientSession() as session:

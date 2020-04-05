@@ -15,9 +15,9 @@ import mimetypes
 from minio import Minio
 from minio.error import NoSuchKey
 from minio.error import ResponseError
-from .task import Task
-from .task import TaskStatus
-from .broker import Broker
+from ..task import Task
+from ..task import TaskStatus
+from ..broker import Broker
 
 
 class TaskMaker(object):
@@ -63,12 +63,12 @@ class TaskMaker(object):
     def pop_task(self):
         return self.broker.pop_task()
 
-    def delete_task_all(self, project, userid):
-        for data in self.iter_task_list(project, userid):
-            self.delete_task_by_id(project, userid, data['taskid'])
+    def delete_task_all(self, project, user):
+        for data in self.iter_task_list(project, user):
+            self.delete_task_by_id(project, user, data['taskid'])
 
-    def delete_task_by_id(self, project, userid, taskid):
-        task = Task(project=project, userid=userid, taskid=taskid)
+    def delete_task_by_id(self, project, user, taskid):
+        task = Task(project=project, user=user, taskid=taskid)
 
         self.create_bucket_if_not_exists()
 
@@ -82,11 +82,11 @@ class TaskMaker(object):
             task.upload_object
         )
 
-    def iter_task_list(self, project, userid):
+    def iter_task_list(self, project, user):
         self.create_bucket_if_not_exists()
         objects = self.minio_cli.list_objects_v2(
             self.bucket_name, prefix='status/{}/{}/'.format(
-                project, userid
+                project, user
             )
         )
 
@@ -112,11 +112,11 @@ class TaskMaker(object):
             data = json.loads(rsp.data)
             yield data
 
-    def get_task_list(self, project, userid):
+    def get_task_list(self, project, user):
         self.create_bucket_if_not_exists()
 
         result = []
-        for data in self.iter_task_list(project, userid):
+        for data in self.iter_task_list(project, user):
             task = TaskStatus(**data)
             download = self.minio_cli.presigned_get_object(
                 self.bucket_name,
@@ -148,8 +148,8 @@ class TaskMaker(object):
             expires=datetime.timedelta(days=1)
         )
 
-    def get_task_by_id(self, project, userid, taskid):
-        task = Task(taskid=taskid, project=project, userid=userid)
+    def get_task_by_id(self, project, user, taskid):
+        task = Task(taskid=taskid, project=project, user=user)
 
         self.create_bucket_if_not_exists()
         _object = self.minio_cli.get_object(

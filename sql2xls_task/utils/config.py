@@ -18,7 +18,7 @@ from pyopts import opts
 from pyopts import FeildOption
 from pyopts import RootSettings
 from .brokers.redis_broker import RedisBroker
-from .task_maker import TaskMaker
+from .fsmaker.task_maker import TaskMaker
 
 
 class Settings(RootSettings):

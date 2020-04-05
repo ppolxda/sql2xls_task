@@ -31,7 +31,7 @@ async def is_file_exist(task: Task, timeout, trycount=0):
     result = task_maker.is_file_exist(task)
     if result:
         _task = task_maker.get_task_by_id(
-            task.project, task.userid, task.taskid
+            task.project, task.user, task.taskid
         )
 
         if _task.status in [EnumStatus.FINISH, EnumStatus.CANCEL]:
@@ -42,10 +42,10 @@ async def is_file_exist(task: Task, timeout, trycount=0):
 
 
 @app.route(
-    "/export/task/<project>/<userid>/add/sync",
+    "/export/task/<project>/<user>/add/sync",
     methods=frozenset({"POST"})
 )
-async def export_task(request, project, userid):
+async def export_task(request, project, user):
     try:
         jsondata = request.json
         if not isinstance(jsondata, dict):
@@ -57,7 +57,7 @@ async def export_task(request, project, userid):
         })
 
     jsondata['project'] = project
-    jsondata['userid'] = userid
+    jsondata['user'] = user
 
     try:
         timeout = int(jsondata.pop('timeout'))
@@ -96,10 +96,10 @@ async def export_task(request, project, userid):
 
 
 @app.route(
-    "/export/task/<project>/<userid>/add/async",
+    "/export/task/<project>/<user>/add/async",
     methods=frozenset({"POST"})
 )
-async def export_task_async(request, project, userid):
+async def export_task_async(request, project, user):
     try:
         jsondata = request.json
         if not isinstance(jsondata, dict):
@@ -111,7 +111,7 @@ async def export_task_async(request, project, userid):
         })
 
     jsondata['project'] = project
-    jsondata['userid'] = userid
+    jsondata['user'] = user
 
     try:
         jsondata['mode'] = 'async'
@@ -129,13 +129,13 @@ async def export_task_async(request, project, userid):
 
 
 @app.route(
-    "/export/task/<project>/<userid>/all",
+    "/export/task/<project>/<user>/all",
     methods=frozenset({"DELETE"})
 )
-def export_task_delete_all(request, project, userid):
+def export_task_delete_all(request, project, user):
     try:
         task_maker.delete_task_all(
-            project, userid
+            project, user
         )
     except Exception as ex:
         return json({
@@ -150,13 +150,13 @@ def export_task_delete_all(request, project, userid):
 
 
 @app.route(
-    "/export/task/<project>/<userid>/<taskid>",
+    "/export/task/<project>/<user>/<taskid>",
     methods=frozenset({"DELETE"})
 )
-def export_task_delete(request, project, userid, taskid):
+def export_task_delete(request, project, user, taskid):
     try:
         task_maker.delete_task_by_id(
-            project, userid, taskid
+            project, user, taskid
         )
     except Exception as ex:
         return json({
@@ -171,13 +171,13 @@ def export_task_delete(request, project, userid, taskid):
 
 
 @app.route(
-    "/export/task/<project>/<userid>/list",
+    "/export/task/<project>/<user>/list",
     methods=frozenset({"GET"})
 )
-def export_task_list(request, project, userid):
+def export_task_list(request, project, user):
     try:
         datas = task_maker.get_task_list(
-            project, userid
+            project, user
         )
     except Exception as ex:
         return json({

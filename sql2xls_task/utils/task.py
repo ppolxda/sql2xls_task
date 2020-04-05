@@ -47,7 +47,7 @@ class Task(object):
         self.options = self.kwargs.get('options', [])
         # self.upload_url = self.kwargs.get('upload_url', '')
         # self.status_url = self.kwargs.get('status_url', '')
-        self.userid = self.kwargs.get('userid', 0)
+        self.user = self.kwargs.get('user', 0)
         self.project = self.kwargs.get('project', 'null')
         self.memo = self.kwargs.get('memo', '')
 
@@ -63,7 +63,7 @@ class Task(object):
             'options': self.options,
             # 'upload_url': self.upload_url,
             # 'status_url': self.status_url,
-            'userid': self.userid,
+            'user': self.user,
             'project': self.project,
             'memo': self.memo,
         }
@@ -72,7 +72,7 @@ class Task(object):
     def status_object(self):
         return 'status/{}/{}/{}.json'.format(
             self.project,
-            self.userid,
+            self.user,
             self.taskid
         )
 
@@ -80,7 +80,7 @@ class Task(object):
     def upload_object(self):
         return 'files/{}/{}/{}.xls'.format(
             self.project,
-            self.userid,
+            self.user,
             self.taskid
         )
 
@@ -88,7 +88,7 @@ class Task(object):
     def download_object(self):
         return 'files/{}/{}/{}.xls'.format(
             self.project,
-            self.userid,
+            self.user,
             self.taskid
         )
 
@@ -127,8 +127,8 @@ class Task(object):
             raise TypeError('project invaild')
 
         # TODO - sql_url format checker
-        if not self.userid or not isinstance(self.userid, str):
-            raise TypeError('userid invaild')
+        if not self.user or not isinstance(self.user, str):
+            raise TypeError('user invaild')
 
         for i in self.options:
             if 'field' not in i or not i['field'] \
