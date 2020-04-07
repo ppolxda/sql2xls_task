@@ -10,6 +10,10 @@ except ImportError:
     print('running fake_funcs')
 
 
+class MakerError(Exception):
+    pass
+
+
 class Maker(object):
 
     def __init__(self, sql_result, options):
@@ -40,6 +44,8 @@ class Maker(object):
     def _csv_cols(self, colkey, colval, fields):
         try:
             return self.__csv_cols(colkey, colval, fields)
+        except MakerError:
+            raise
         except:  # noqa
             return colval
 
@@ -104,6 +110,12 @@ class Maker(object):
         elif option['dataType'] == 'float':
             return utils.string_line('{0:f}'.format(colval))
 
+        elif isinstance(colval, bytes):
+            if len(colval) != 1:
+                raise MakerError('byte not support')
+
+            # TAG - use bit to boolen
+            return True if b'\x01' == colval else False
         else:
             return colval
 

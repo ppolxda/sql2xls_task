@@ -128,6 +128,18 @@ class TaskMaker(object):
             result.append(task)
         return result
 
+    def is_status_exist(self, task: Task):
+        try:
+            self.create_bucket_if_not_exists()
+            return self.minio_cli.stat_object(
+                self.bucket_name,
+                task.status_object,
+            )
+        except NoSuchKey:
+            return None
+        except ResponseError:
+            return None
+
     def is_file_exist(self, task: Task):
         try:
             self.create_bucket_if_not_exists()

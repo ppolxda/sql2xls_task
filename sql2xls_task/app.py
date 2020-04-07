@@ -28,17 +28,20 @@ async def is_file_exist(task: Task, timeout, trycount=0):
     if timeout <= 0:
         return None
 
-    result = task_maker.is_file_exist(task)
+    result = task_maker.is_status_exist(task)
     if result:
         _task = task_maker.get_task_by_id(
             task.project, task.user, task.taskid
         )
 
-        if _task.status in [EnumStatus.FINISH, EnumStatus.CANCEL]:
+        if _task and _task.status in [
+            EnumStatus.FINISH, EnumStatus.CANCEL
+        ]:
             return _task
 
     await asyncio.sleep(1)
-    return await is_file_exist(task, timeout - 1, trycount + 1)
+    result = await is_file_exist(task, timeout - 1, trycount + 1)
+    return result
 
 
 @app.route(

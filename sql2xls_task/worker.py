@@ -35,9 +35,17 @@ async def __run_task(task: Task):
 
 
 async def run_task():
+    task = None
     try:
         task = settings.borker.pop_task()
+    except Exception as ex:
+        LOGGER.warning(
+            'error: %s', ex
+        )
+
+    try:
         if not task:
+            await asyncio.sleep(1)
             return
 
         LOGGER.info('[%s]start task', task.status_object)
