@@ -136,7 +136,7 @@ class Settings(RootSettings):
             self.miniio_url,
             access_key=self.miniio_accesskey,
             secret_key=self.miniio_secretkey,
-            region=self.miniio_region,
+            # region=self.miniio_region,
             secure=secure,
         )
 
