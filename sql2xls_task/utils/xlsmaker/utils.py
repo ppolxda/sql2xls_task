@@ -74,4 +74,3 @@ def encode_string(string):
 
 def string_line(val):
     return val
-    return '="' + str(val) + '"'

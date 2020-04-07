@@ -8,6 +8,7 @@
 """
 import io
 import xlwt
+import datetime
 from .maker import Maker
 
 
@@ -25,7 +26,17 @@ class XlsMaker(Maker):
         for line in iter(self.sql_result.fetchall()):
             line = self._csv_rows(line)
             for i, field in enumerate(line):
-                sheet.write(r, i, field)
+
+                if isinstance(field, datetime.datetime):
+                    date_format = xlwt.XFStyle()
+                    date_format.num_format_str = 'yyyy-mm-dd hh:mm:ss.00'
+                    sheet.write(r, i, field, date_format)
+                elif isinstance(field, datetime.date):
+                    date_format = xlwt.XFStyle()
+                    date_format.num_format_str = 'yyyy-mm-dd'
+                    sheet.write(r, i, field, date_format)
+                else:
+                    sheet.write(r, i, field)
             r += 1
 
         writer.save(f)

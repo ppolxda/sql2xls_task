@@ -192,13 +192,13 @@ class TaskMaker(object):
         )
 
     def upload_file(self, task: TaskStatus, buffer, filetype):
-        task.update = str(datetime.datetime.now())
-        data = task.to_json().encode('utf8')
-        buf = io.BytesIO(data)
+        # task.update = str(datetime.datetime.now())
+        # data = task.to_json().encode('utf8')
+        buf = io.BytesIO(buffer)
 
         self.create_bucket_if_not_exists()
         return self.minio_cli.put_object(
             self.bucket_name, task.upload_object,
-            buf, len(data),
+            buf, len(buffer),
             content_type=mimetypes.types_map[filetype]
         )
