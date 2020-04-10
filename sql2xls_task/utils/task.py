@@ -141,7 +141,8 @@ class Task(object):
 
             if 'options' not in i or not i['options'] \
                     or not isinstance(i['options'], dict):
-                raise TypeError('options field options invaild')
+                i['options'] = {}
+                # raise TypeError('options field options invaild')
 
             # if 'dataType' not in i['options'] \
             #         or not i['options']['dataType'] \
