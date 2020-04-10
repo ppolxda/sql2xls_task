@@ -1,4 +1,6 @@
+import six
 import codecs
+import decimal
 from . import utils
 from . import fake_funcs
 from .select_sql import SelectSql
@@ -94,20 +96,20 @@ class Maker(object):
         if not option:
             return colval
 
-        if 'dataType' not in option:
-            return colval
+        # if 'dataType' not in option:
+        #     return colval
 
-        elif option['dataType'] == 'string':
+        if isinstance(colval, six.string_types):
             if colkey == 'email':
                 colval = utils.encode_email(colval)
             if colkey == 'phone':
                 colval = utils.encode_string(colval)
             return utils.string_line(colval)
 
-        elif option['dataType'] == 'int':
+        elif isinstance(colval, six.integer_types):
             return colval
 
-        elif option['dataType'] == 'float':
+        elif isinstance(colval, (decimal.Decimal, float)):
             return utils.string_line('{0:f}'.format(colval))
 
         elif isinstance(colval, bytes):

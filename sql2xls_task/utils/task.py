@@ -143,10 +143,10 @@ class Task(object):
                     or not isinstance(i['options'], dict):
                 raise TypeError('options field options invaild')
 
-            if 'dataType' not in i['options'] \
-                    or not i['options']['dataType'] \
-                    or not isinstance(i['options']['dataType'], str):
-                raise TypeError('options field dataType invaild')
+            # if 'dataType' not in i['options'] \
+            #         or not i['options']['dataType'] \
+            #         or not isinstance(i['options']['dataType'], str):
+            #     raise TypeError('options field dataType invaild')
 
     def check_full(self):
         self.check()
