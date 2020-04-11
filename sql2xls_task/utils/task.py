@@ -6,6 +6,7 @@
 
 @desc: task
 """
+import six
 import uuid
 import json
 import datetime
@@ -84,11 +85,7 @@ class Task(object):
             return 'files/{}/{}/{}.xls'.format(
                 self.project,
                 self.user,
-                ''.join([
-                    self.fname[:self.fname.find('.')],
-                    '_' + self.taskid[:8],
-                    self.fname[self.fname.find('.'):]
-                ])
+                '_'.join([self.fname, self.taskid[:8]])
             )
         else:
             return 'files/{}/{}/{}.xls'.format(
@@ -116,7 +113,7 @@ class Task(object):
 
     def check(self):
         # TODO - sql format checker
-        if not self.sql or not isinstance(self.sql, str):
+        if not self.sql or not isinstance(self.sql, six.string_types):
             raise TypeError('sql invaild')
 
         sql_lower = self.sql.lower()
@@ -124,7 +121,7 @@ class Task(object):
             raise TypeError('sql not select')
 
         # TODO - sql_url format checker
-        if not self.sql_url or not isinstance(self.sql_url, str):
+        if not self.sql_url or not isinstance(self.sql_url, six.string_types):
             raise TypeError('sql_url invaild')
 
         # TODO - sql_url format checker
@@ -132,12 +129,17 @@ class Task(object):
             raise TypeError('options invaild')
 
         # TODO - sql_url format checker
-        if not self.project or not isinstance(self.project, str):
+        if not self.project or not isinstance(self.project, six.string_types):
             raise TypeError('project invaild')
 
         # TODO - sql_url format checker
-        if not self.user or not isinstance(self.user, str):
+        if not self.user or not isinstance(self.user, six.string_types):
             raise TypeError('user invaild')
+
+        if self.fname and \
+            (not isinstance(self.fname, six.string_types) or
+                self.fname.find('.') >= 0):
+            raise TypeError('fname format invaild')
 
         for i in self.options:
             if 'field' not in i or not i['field'] \
