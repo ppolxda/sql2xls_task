@@ -31,7 +31,8 @@ class AppClient(object):
         self.sessions = sessions
 
     async def add_task_sync(self, user, sql_url, sql, sql_parames,
-                            options, memo='', project=None, **kwargs):
+                            options, memo='', project=None, fname=None,
+                            **kwargs):
         project = self.__get_project(project)
         url = self.host + '/export/task/{project}/{user}/add/sync'.format(
             project=project, user=user
@@ -44,6 +45,7 @@ class AppClient(object):
             'options': options,
             'memo': memo,
             'user': user,
+            'fname': fname,
             'project': project,
         }
 
@@ -57,7 +59,8 @@ class AppClient(object):
                 return await response.json()
 
     async def add_task_async(self, user, sql_url, sql, sql_parames,
-                             options, memo='', project=None, **kwargs):
+                             options, memo='', project=None, fname=None,
+                             **kwargs):
         project = self.__get_project(project)
         url = self.host + '/export/task/{project}/{user}/add/async'.format(
             project=project, user=user
@@ -70,6 +73,7 @@ class AppClient(object):
             'options': options,
             'memo': memo,
             'user': user,
+            'fname': fname,
             'project': project,
         }
 

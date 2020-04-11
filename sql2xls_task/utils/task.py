@@ -49,6 +49,7 @@ class Task(object):
         # self.status_url = self.kwargs.get('status_url', '')
         self.user = self.kwargs.get('user', 0)
         self.project = self.kwargs.get('project', 'null')
+        self.fname = self.kwargs.get('fname', '')
         self.memo = self.kwargs.get('memo', '')
 
     def to_dict(self):
@@ -65,6 +66,7 @@ class Task(object):
             # 'status_url': self.status_url,
             'user': self.user,
             'project': self.project,
+            'fname': self.fname,
             'memo': self.memo,
         }
 
@@ -78,19 +80,26 @@ class Task(object):
 
     @property
     def upload_object(self):
-        return 'files/{}/{}/{}.xls'.format(
-            self.project,
-            self.user,
-            self.taskid
-        )
+        if self.fname:
+            return 'files/{}/{}/{}.json'.format(
+                self.project,
+                self.user,
+                ''.join([
+                    self.fname[:self.fname.find('.')],
+                    '_' + self.taskid[:8],
+                    self.fname[self.fname.find('.'):]
+                ])
+            )
+        else:
+            return 'files/{}/{}/{}.xls'.format(
+                self.project,
+                self.user,
+                self.taskid
+            )
 
     @property
     def download_object(self):
-        return 'files/{}/{}/{}.xls'.format(
-            self.project,
-            self.user,
-            self.taskid
-        )
+        return self.upload_object
 
     # def gen_url(self):
     #     self.status_url = self.minio_cli.presigned_put_object(
