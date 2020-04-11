@@ -81,7 +81,7 @@ class Task(object):
     @property
     def upload_object(self):
         if self.fname:
-            return 'files/{}/{}/{}.json'.format(
+            return 'files/{}/{}/{}.xls'.format(
                 self.project,
                 self.user,
                 ''.join([
