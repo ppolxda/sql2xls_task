@@ -87,6 +87,12 @@ class Maker(object):
                 if not isinstance(show_option['options'], dict):
                     return colval
 
+                # TAG - use bit to boolen, translation
+                if isinstance(colval, bytes):
+                    if len(colval) != 1:
+                        raise MakerError('byte not support')
+                    colval = '1' if b'\x01' == colval else '0'
+
                 return show_option['options']['enums'].get(str(colval), colval)
 
             if 'func' in show_option['options']:
