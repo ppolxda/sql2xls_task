@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import logging
+import traceback
 from minio.error import NoSuchKey
 from minio.error import ResponseError
 from .utils.config import Settings
@@ -72,8 +73,9 @@ async def run_task():
         settings.task_maker.upload_status(task)
     except Exception as ex:
         LOGGER.warning(
-            '[%s]object error: %s',
-            task.status_object, ex
+            '[%s]object error: %s %s',
+            task.status_object, ex,
+            traceback.format_exc()
         )
 
         task.status = EnumStatus.CANCEL

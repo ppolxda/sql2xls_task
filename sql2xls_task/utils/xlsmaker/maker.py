@@ -77,7 +77,8 @@ class Maker(object):
             'field': {'field': key, 'cnname': 'cnname', 'options': {}}
         }
         """  # noqa
-        show_option = self.show_dict.get(colkey, None)
+        show_option = self.show_dict.get(colkey, {})
+        # option = show_option.get('options', {})
         if not show_option:
             return colval
 
@@ -92,9 +93,9 @@ class Maker(object):
                 return funcs.call_func(show_option['options']['func'],
                                        colval, fields)
 
-        option = show_option.get('options', None)
-        if not option:
-            return colval
+        # option = show_option.get('options', None)
+        # if not option:
+        #     return colval
 
         # if 'dataType' not in option:
         #     return colval
