@@ -130,7 +130,7 @@ class ResourcesMaker(object):
             iuuid = str(uuid.uuid4()).replace('-', '')
 
         today = datetime.date.today()
-        return '{project}{prefix}/{year}/{month}/{iuuid}{suffix}'.format(
+        return '{project}{prefix}/{year}/{month:02d}/{iuuid}{suffix}'.format(
             project=project,
             prefix=prefix,
             year=today.year,
