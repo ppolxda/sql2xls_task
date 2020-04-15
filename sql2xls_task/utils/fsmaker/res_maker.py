@@ -161,6 +161,12 @@ class ResourcesMaker(object):
         )
 
     def get_objects_list(self, project, prefix):
+        if prefix and prefix[0] != '/':
+            prefix = ''.join(['/', prefix])
+
+        if prefix[-1] != '/':
+            prefix = ''.join([prefix, '/'])
+
         self.create_bucket_if_not_exists()
         return self.minio_cli.list_objects(
             self.bucket_name, '{project}{prefix}'.format(

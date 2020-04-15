@@ -257,9 +257,6 @@ async def resources_res_list(request, project):
     try:
         prefix = args.get('prefix', '')
         expires = int(args.get('expires', 60))
-        if prefix and prefix[0] != '/':
-            prefix = ''.join(['/', prefix])
-
         objects = res_maker.get_objects_list(
             project, prefix
         )
@@ -273,7 +270,14 @@ async def resources_res_list(request, project):
         'error': 0,
         'message': 'sucess',
         'objects': [
-            res_maker.presigned_get_object(i.object_name, expires)
+            {
+                'is_dir': i.is_dir,
+                'object': i.object_name,
+                'content_type': i.content_type,
+                'last_modified': i.last_modified,
+                'url': '' if i.is_dir
+                else res_maker.presigned_get_object(i.object_name, expires)
+            }
             for i in objects
         ]
     })
