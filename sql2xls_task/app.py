@@ -274,7 +274,8 @@ async def resources_res_list(request, project):
                 'is_dir': i.is_dir,
                 'object': i.object_name,
                 'content_type': i.content_type,
-                'last_modified': str(i.last_modified),
+                'last_modified': str(i.last_modified)
+                if i.last_modified else None,
                 'url': '' if i.is_dir
                 else res_maker.presigned_get_object(i.object_name, expires)
             }
