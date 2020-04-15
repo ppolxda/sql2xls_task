@@ -6,7 +6,6 @@
 
 @desc: task
 """
-import io
 import six
 import uuid
 import json
@@ -17,6 +16,8 @@ from minio import Minio
 from minio.error import NoSuchKey
 from minio.error import ResponseError
 from minio.error import NoSuchBucketPolicy
+from minio.error import BucketAlreadyExists
+from minio.error import BucketAlreadyOwnedByYou
 
 
 class ResourcesMaker(object):
@@ -45,13 +46,18 @@ class ResourcesMaker(object):
         if self.is_bucket_create:
             return
 
-        result = self.minio_cli.bucket_exists(self.bucket_name)
-        if not result:
+        try:
             self.minio_cli.make_bucket(self.bucket_name, self.bucket_location)
+        except BucketAlreadyOwnedByYou:
+            pass
+        except BucketAlreadyExists:
+            pass
+        except ResponseError:
+            raise
 
         try:
             policy = self.minio_cli.get_bucket_policy(self.bucket_name)
-        except NoSuchBucketPolicy as ex:
+        except NoSuchBucketPolicy:
             policy = {
                 'Version': '2012-10-17'
             }
@@ -94,16 +100,21 @@ class ResourcesMaker(object):
         try:
             self.create_bucket_if_not_exists()
             return self.minio_cli.stat_object(
-                self.bucket_name, path,
+                self.bucket_name, path
             )
         except NoSuchKey:
             return None
         except ResponseError:
-            return None
+            raise
 
-    def gen_object_path_str(self, project, suffix, trycount=0):
+    def gen_object_path_str(self, project, prefix, suffix, trycount=0):
         if not project or not isinstance(project, six.string_types):
             raise TypeError('project invaild')
+
+        if prefix and (not isinstance(prefix, six.string_types) or
+                       prefix[0] != '/' or (
+                           len(prefix) > 1 and prefix[-1] == '/')):
+            raise TypeError('prefix invaild')
 
         if not suffix or \
             not isinstance(suffix, six.string_types) or \
@@ -119,28 +130,29 @@ class ResourcesMaker(object):
             iuuid = str(uuid.uuid4()).replace('-', '')
 
         today = datetime.date.today()
-        return '{project}/{year}/{month}/{iuuid}{suffix}'.format(
+        return '{project}{prefix}/{year}/{month}/{iuuid}{suffix}'.format(
             project=project,
+            prefix=prefix,
             year=today.year,
             month=today.month,
             iuuid=iuuid,
             suffix=suffix
         )
 
-    def gen_object_path(self, project, suffix, trycount=0):
+    def gen_object_path(self, project, prefix, suffix, trycount=0):
         if trycount > self.trycount:
             raise TypeError('gen_object_path error')
 
-        _path = self.gen_object_path_str(project, suffix, trycount)
+        _path = self.gen_object_path_str(project, prefix, suffix, trycount)
         if self.is_file_exist(_path):
-            return self.gen_object_path(project, suffix, trycount + 1)
+            return self.gen_object_path(project, prefix, suffix, trycount + 1)
         return _path
 
-    def presigned_put_object(self, project, suffix, expires=0):
+    def presigned_put_object(self, project, prefix, suffix, expires=0):
         if expires <= 0:
             expires = self.expires
 
-        path = self.gen_object_path(project, suffix)
+        path = self.gen_object_path(project, prefix, suffix)
 
         self.create_bucket_if_not_exists()
         return self.minio_cli.presigned_put_object(
@@ -148,8 +160,16 @@ class ResourcesMaker(object):
             expires=datetime.timedelta(minutes=expires)
         )
 
-    # def presigned_get_object(self, project, path, expires=60):
-    #     return self.minio_cli.presigned_get_object(
-    #         self.bucket_name, path,
-    #         expires=datetime.timedelta(minutes=expires)
-    #     )
+    def get_objects_list(self, project, prefix):
+        self.create_bucket_if_not_exists()
+        return self.minio_cli.list_objects(
+            self.bucket_name, '{project}{prefix}'.format(
+                project=project, prefix=prefix)
+        )
+
+    def presigned_get_object(self, path, expires=60):
+        self.create_bucket_if_not_exists()
+        return self.minio_cli.presigned_get_object(
+            self.bucket_name, path,
+            expires=datetime.timedelta(minutes=expires)
+        )

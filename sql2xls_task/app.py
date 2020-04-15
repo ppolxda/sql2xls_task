@@ -217,9 +217,14 @@ async def resources_presigned(request, project):
 
     try:
         ftype = args.get('type', '')
+        prefix = args.get('prefix', '')
         expires = int(args.get('expires', 60))
+
+        if prefix and prefix[0] != '/':
+            prefix = ''.join(['/', prefix])
+
         url = res_maker.presigned_put_object(
-            project, ftype, expires
+            project, prefix, ftype, expires
         )
     except Exception as ex:
         return json({
@@ -231,6 +236,46 @@ async def resources_presigned(request, project):
         'error': 0,
         'message': 'sucess',
         'url': url
+    })
+
+
+@app.route(
+    "/res/<project>/list",
+    methods=frozenset({"GET"})
+)
+async def resources_res_list(request, project):
+    try:
+        args = request.args
+        if not isinstance(args, dict) or not request.args:
+            raise TypeError('query_args invaild')
+    except Exception:
+        return json({
+            'error': 1,
+            'message': 'request invail'
+        })
+
+    try:
+        prefix = args.get('prefix', '')
+        expires = int(args.get('expires', 60))
+        if prefix and prefix[0] != '/':
+            prefix = ''.join(['/', prefix])
+
+        objects = res_maker.get_objects_list(
+            project, prefix
+        )
+    except Exception as ex:
+        return json({
+            'error': 1,
+            'message': str(ex)
+        })
+
+    return json({
+        'error': 0,
+        'message': 'sucess',
+        'objects': [
+            res_maker.presigned_get_object(i.object_name, expires)
+            for i in objects
+        ]
     })
 
 

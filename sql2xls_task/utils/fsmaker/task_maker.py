@@ -15,6 +15,8 @@ import mimetypes
 from minio import Minio
 from minio.error import NoSuchKey
 from minio.error import ResponseError
+from minio.error import BucketAlreadyExists
+from minio.error import BucketAlreadyOwnedByYou
 from ..task import Task
 from ..task import TaskStatus
 from ..broker import Broker
@@ -36,9 +38,15 @@ class TaskMaker(object):
         if self.is_bucket_create:
             return
 
-        result = self.minio_cli.bucket_exists(self.bucket_name)
-        if not result:
+        try:
             self.minio_cli.make_bucket(self.bucket_name, self.bucket_location)
+        except BucketAlreadyOwnedByYou:
+            pass
+        except BucketAlreadyExists:
+            pass
+        except ResponseError:
+            raise
+
         self.is_bucket_create = True
 
     def create_task(self, **kwargs):

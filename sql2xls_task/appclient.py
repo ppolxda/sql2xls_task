@@ -139,3 +139,43 @@ class AppClient(object):
             raise TypeError('project not set')
 
         return self.project
+
+    # ----------------------------------------------
+    #        ResourcesMaker
+    # ----------------------------------------------
+
+    async def get_res_list(self, prefix, project=None, expires=15, **kwargs):
+        project = self.__get_project(project)
+        url = self.host + (
+            '/res/{project}/list'
+            '?prefix={prefix}&expires={expires}'
+        ).format(
+            project=project,
+            prefix=prefix,
+            expires=expires
+        )
+
+        async with aiohttp.ClientSession(**self.sessions) as session:
+            async with session.get(url, **kwargs) as response:
+                if response.status != 200:
+                    raise WebHttpError(response.reason)
+                return await response.json()
+
+    async def presigned_upload(self, prefix, ftype, project=None,
+                               expires=15, **kwargs):
+        project = self.__get_project(project)
+        url = self.host + (
+            '/res/{project}'
+            '?prefix={prefix}&type={ftype}&expires={expires}'
+        ).format(
+            project=project,
+            prefix=prefix,
+            ftype=ftype,
+            expires=expires
+        )
+
+        async with aiohttp.ClientSession(**self.sessions) as session:
+            async with session.get(url, **kwargs) as response:
+                if response.status != 200:
+                    raise WebHttpError(response.reason)
+                return await response.json()
