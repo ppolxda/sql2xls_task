@@ -113,7 +113,7 @@ class TaskMaker(object):
                 obj.object_name
             )
             if rsp.status != 200:
-                raise ResponseError(
+                raise TypeError(
                     'get_object error {}'.format(rsp.reason)
                 )
 

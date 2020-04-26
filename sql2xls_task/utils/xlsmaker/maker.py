@@ -39,6 +39,9 @@ class Maker(object):
             l['field']: l for l in options
         }
 
+    def to_csv_buffer(self):
+        raise NotImplementedError
+
     def to_csv_file(self, file_path):
         with codecs.open(file_path, 'wb') as csvfile:
             csvfile.write(self.to_csv_buffer())

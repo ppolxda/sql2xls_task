@@ -81,17 +81,25 @@ class Task(object):
 
     @property
     def upload_object(self):
+        now = datetime.datetime.now()
         if self.fname:
             return 'files/{}/{}/{}.xls'.format(
                 self.project,
                 self.user,
-                '_'.join([self.fname, self.taskid[:8]])
+                '_'.join([
+                    self.fname,
+                    now.strftime('%Y%m%dT%H%M%S'),
+                    self.taskid[:8],
+                ])
             )
         else:
             return 'files/{}/{}/{}.xls'.format(
                 self.project,
                 self.user,
-                self.taskid
+                '_'.join([
+                    self.taskid,
+                    now.strftime('%Y%m%dT%H%M%S')
+                ]),
             )
 
     @property
@@ -163,13 +171,13 @@ class Task(object):
     def check_full(self):
         self.check()
 
-        # TODO - upload_url format checker
-        if not self.upload_url:
-            raise TypeError('upload_url invaild')
+        # # TODO - upload_url format checker
+        # if not self.upload_url:
+        #     raise TypeError('upload_url invaild')
 
-        # TODO - status_url format checker
-        if not self.status_url:
-            raise TypeError('status_url invaild')
+        # # TODO - status_url format checker
+        # if not self.status_url:
+        #     raise TypeError('status_url invaild')
 
     def to_json(self):
         return json.dumps(self.to_dict())
