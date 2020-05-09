@@ -81,13 +81,20 @@ class Task(object):
 
     @property
     def upload_object(self):
+        if isinstance(self.create, six.string_types):
+            create = datetime.datetime.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(self.create, datetime.datetime):
+            create = self.create
+        else:
+            raise TypeError('create time invaild') 
+
         if self.fname:
             return 'files/{}/{}/{}.xls'.format(
                 self.project,
                 self.user,
                 '_'.join([
                     self.fname,
-                    self.create.strftime('%Y%m%dT%H%M%S'),
+                    create.strftime('%Y%m%dT%H%M%S'),
                     self.taskid[:8],
                 ])
             )
@@ -97,7 +104,7 @@ class Task(object):
                 self.user,
                 '_'.join([
                     self.taskid,
-                    self.create.strftime('%Y%m%dT%H%M%S')
+                    create.strftime('%Y%m%dT%H%M%S')
                 ]),
             )
 
