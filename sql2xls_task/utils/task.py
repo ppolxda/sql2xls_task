@@ -81,14 +81,13 @@ class Task(object):
 
     @property
     def upload_object(self):
-        now = datetime.datetime.now()
         if self.fname:
             return 'files/{}/{}/{}.xls'.format(
                 self.project,
                 self.user,
                 '_'.join([
                     self.fname,
-                    now.strftime('%Y%m%dT%H%M%S'),
+                    self.create.strftime('%Y%m%dT%H%M%S'),
                     self.taskid[:8],
                 ])
             )
@@ -98,7 +97,7 @@ class Task(object):
                 self.user,
                 '_'.join([
                     self.taskid,
-                    now.strftime('%Y%m%dT%H%M%S')
+                    self.create.strftime('%Y%m%dT%H%M%S')
                 ]),
             )
 
