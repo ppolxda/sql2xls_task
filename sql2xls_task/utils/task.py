@@ -82,7 +82,7 @@ class Task(object):
     @property
     def upload_object(self):
         if isinstance(self.create, six.string_types):
-            create = datetime.datetime.strptime(self.create, '%Y-%m-%d %H:%M:%S')
+            create = datetime.datetime.strptime(self.create, '%Y-%m-%d %H:%M:%S.%f')
         elif isinstance(self.create, datetime.datetime):
             create = self.create
         else:
