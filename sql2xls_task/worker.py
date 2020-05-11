@@ -45,8 +45,7 @@ async def run_task():
         )
 
     if not task:
-        await asyncio.sleep(1)
-        ALOOP.call_soon(lambda: asyncio.ensure_future(run_task()))
+        ALOOP.call_later(1, lambda: asyncio.ensure_future(run_task()))
         return
 
     try:
