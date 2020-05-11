@@ -125,12 +125,15 @@ class Settings(RootSettings):
         self.redis_cli = redis.Redis.from_url(self.redis_url)
         self.borker = RedisBroker(self.redis_cli)
 
+        if self.miniio_url.endswith('/'):
+            raise TypeError('miniio_url invaild, suffix error')
+
         if self.miniio_url.startswith('https://'):
             secure = True
             self.miniio_url = self.miniio_url[len('https://'):]
         else:
             secure = False
-            self.miniio_url = self.miniio_url[len('http://'):]
+            self.miniio_url = self.miniio_url[len('http://') :]
 
         self.minio_cli = Minio(
             self.miniio_url,
