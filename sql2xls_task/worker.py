@@ -36,19 +36,20 @@ async def __run_task(task: Task):
 
 
 async def run_task():
-    task = None
     try:
+        task = None
         task = settings.borker.pop_task()
     except Exception as ex:
         LOGGER.warning(
             'error: %s', ex
         )
 
-    try:
-        if not task:
-            await asyncio.sleep(1)
-            return
+    if not task:
+        await asyncio.sleep(1)
+        ALOOP.call_soon(lambda: asyncio.ensure_future(run_task()))
+        return
 
+    try:
         LOGGER.info('[%s]start task', task.status_object)
         await __run_task(task)
     except NoSuchKey as ex:
