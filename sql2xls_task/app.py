@@ -265,7 +265,7 @@ async def resources_res_list(request, project):
     try:
         prefix = args.get('prefix', '')
         expires = int(args.get('expires', 60))
-        recursive = bool(args.get('recursive', False))
+        recursive = bool(args.get('recursive', 'False').lower() == 'true')
         objects = res_maker.get_objects_list(
             project, prefix, recursive
         )
