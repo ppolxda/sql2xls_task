@@ -144,11 +144,12 @@ class AppClient(object):
     #        ResourcesMaker
     # ----------------------------------------------
 
-    async def get_res_list(self, prefix, project=None, expires=15, recursive=False,**kwargs):
+    async def get_res_list(self, prefix, project=None,
+                           expires=15, recursive=False,**kwargs):
         project = self.__get_project(project)
         url = self.host + (
             '/res/{project}/list'
-            '?prefix={prefix}&expires={expires}'
+            '?prefix={prefix}&expires={expires}&recursive={recursive}'
         ).format(
             project=project,
             prefix=prefix,
