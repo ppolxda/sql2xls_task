@@ -120,7 +120,8 @@ class Maker(object):
             return colval
 
         elif isinstance(colval, (decimal.Decimal, float)):
-            return utils.string_line('{0:f}'.format(colval))
+            # return utils.string_line('{0:f}'.format(colval))
+            return colval
 
         elif isinstance(colval, bytes):
             if len(colval) != 1:

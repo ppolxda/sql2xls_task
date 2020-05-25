@@ -254,11 +254,20 @@ async def resources_res_list(request, project):
             'message': 'request invail'
         })
 
+    def format_object_name(val):
+        if not isinstance(val, str):
+            raise TypeError('object_name invaild')
+        
+        if val.startswith(project):
+            val = val[len(project):]
+        return val
+
     try:
         prefix = args.get('prefix', '')
         expires = int(args.get('expires', 60))
+        recursive = bool(args.get('recursive', False))
         objects = res_maker.get_objects_list(
-            project, prefix
+            project, prefix, recursive
         )
     except Exception as ex:
         return json({
@@ -272,7 +281,7 @@ async def resources_res_list(request, project):
         'objects': [
             {
                 'is_dir': i.is_dir,
-                'object': i.object_name,
+                'object': format_object_name(i.object_name),
                 'content_type': i.content_type,
                 'last_modified': str(i.last_modified)
                 if i.last_modified else None,

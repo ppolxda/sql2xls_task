@@ -144,7 +144,7 @@ class AppClient(object):
     #        ResourcesMaker
     # ----------------------------------------------
 
-    async def get_res_list(self, prefix, project=None, expires=15, **kwargs):
+    async def get_res_list(self, prefix, project=None, expires=15, recursive=False,**kwargs):
         project = self.__get_project(project)
         url = self.host + (
             '/res/{project}/list'
@@ -152,7 +152,8 @@ class AppClient(object):
         ).format(
             project=project,
             prefix=prefix,
-            expires=expires
+            expires=expires,
+            recursive=recursive
         )
 
         async with aiohttp.ClientSession(**self.sessions) as session:

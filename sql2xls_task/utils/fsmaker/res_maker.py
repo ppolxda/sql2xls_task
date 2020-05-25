@@ -160,17 +160,19 @@ class ResourcesMaker(object):
             expires=datetime.timedelta(minutes=expires)
         )
 
-    def get_objects_list(self, project, prefix):
-        if prefix and prefix[0] != '/':
-            prefix = ''.join(['/', prefix])
+    def get_objects_list(self, project, prefix, recursive=False):
+        if prefix:
+            if prefix[0] != '/':
+                prefix = ''.join(['/', prefix])
 
-        if prefix[-1] != '/':
-            prefix = ''.join([prefix, '/'])
+            if prefix[-1] != '/':
+                prefix = ''.join([prefix, '/'])
 
         self.create_bucket_if_not_exists()
-        return self.minio_cli.list_objects(
+        return self.minio_cli.list_objects_v2(
             self.bucket_name, '{project}{prefix}'.format(
-                project=project, prefix=prefix)
+                project=project, prefix=prefix),
+                recursive=recursive
         )
 
     def presigned_get_object(self, path, expires=60):

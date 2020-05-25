@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 import asyncio
 import logging
 import traceback
@@ -49,12 +50,14 @@ async def run_task():
         return
 
     try:
+        s = time.time()
         LOGGER.info('[%s]start task', task.status_object)
         await __run_task(task)
     except NoSuchKey as ex:
         LOGGER.warning(
-            '[%s]object NoSuchKey: %s',
-            task.status_object, ex
+            '[%s][%.4fs]object NoSuchKey: %s',
+            task.status_object,
+            time.time() - s, ex
         )
 
         task.status = EnumStatus.CANCEL
@@ -63,8 +66,9 @@ async def run_task():
         settings.task_maker.upload_status(task)
     except ResponseError as ex:
         LOGGER.warning(
-            '[%s]object ResponseError: %s',
-            task.status_object, ex
+            '[%s][%.4fs]object ResponseError: %s',
+            task.status_object,
+            time.time() - s, ex
         )
 
         task.status = EnumStatus.CANCEL
@@ -73,8 +77,9 @@ async def run_task():
         settings.task_maker.upload_status(task)
     except Exception as ex:
         LOGGER.warning(
-            '[%s]object error: %s %s',
-            task.status_object, ex,
+            '[%s][%.4fs]object error: %s %s',
+            task.status_object,
+            time.time() - s, ex,
             traceback.format_exc()
         )
 
@@ -85,7 +90,8 @@ async def run_task():
     else:
         LOGGER.info(
             '[%s]object finish',
-            task.status_object
+            task.status_object,
+            time.time() - s,
         )
         task.status = EnumStatus.FINISH
         task.error = 'finish'
